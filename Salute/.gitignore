@@ -1,31 +1,23 @@
-# === SEGURANÇA (Obrigatório) ===
+# Build
+bin/
+obj/
+
+# Certificados e segredos
+*.pfx
+*.p12
 .env
-.env.*
-.env.local
-.env.*.local
-appsettings.json
-appsettings.*.json
-*.pem
-*.key
 
-# === .NET / C# (Back-end) ===
-[Bb]in/
-[Oo]bj/
-out/
-.vscode/
-.user
-*.suo
-*.userosscache
-*.sln.docstates
+# Logs e debug
+*.log
+*.binlog
+*.txt
+msbuild.binlog
+erro_runtime.txt
+myeasylog.log
 
-# === Node / React / Vue (Front-end) ===
-node_modules/
-dist/
-build/
-.cache/
-.npm
-npm-debug.log*
+# Ferramentas externas
+procdump/
+Procdump.zip
 
-# === Sistema Operacional ===
-Thumbs.db
-.DS_Store
+# VS
+.vs/

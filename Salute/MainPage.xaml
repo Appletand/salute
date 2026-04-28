@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Salute.MainPage"
+             Title="Salute">
+    <VerticalStackLayout Spacing="25" Padding="30,0" VerticalOptions="Center">
+        <Label Text="Bem‑vindo ao Salute" FontSize="32" HorizontalOptions="Center" />
+		<Label Text="Olá, MAUI!" FontSize="24" HorizontalOptions="Center" />
+		<Button Text="Abrir Sobre" x:Name="SobreButton" Clicked="OnSobreClicked"
+        HorizontalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,31 @@
+# === SEGURANÇA (Obrigatório) ===
+.env
+.env.*
+.env.local
+.env.*.local
+appsettings.json
+appsettings.*.json
+*.pem
+*.key
+
+# === .NET / C# (Back-end) ===
+[Bb]in/
+[Oo]bj/
+out/
+.vscode/
+.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# === Node / React / Vue (Front-end) ===
+node_modules/
+dist/
+build/
+.cache/
+.npm
+npm-debug.log*
+
+# === Sistema Operacional ===
+Thumbs.db
+.DS_Store

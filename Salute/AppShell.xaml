@@ -1,7 +1,25 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:Salute.Views.Patients"
+       xmlns:anamnesis="clr-namespace:Salute.Views.Anamnesis"
        xmlns:local="clr-namespace:Salute"
-       x:Class="Salute.AppShell">
-    <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
+       x:Class="Salute.AppShell"
+       Shell.NavBarIsVisible="True">
+
+	<TabBar>
+		<ShellContent Title="Dashboard"
+                      Icon="dotnet_bot.png"
+                      ContentTemplate="{DataTemplate local:MainPage}" />
+
+		<ShellContent Title="Pacientes"
+                      Icon="dotnet_bot.png"
+                      ContentTemplate="{DataTemplate views:PatientsPage}"
+                      Route="PatientsPage" />
+
+		<ShellContent Title="Anamnese"
+                      Icon="dotnet_bot.png"
+                      ContentTemplate="{DataTemplate anamnesis:AnamnesisPage}"
+                      Route="AnamnesisPage" />
+	</TabBar>
 </Shell>

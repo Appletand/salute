@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Salute.Views.Patients.PatientDetailPage"
+             Title="Prontuário">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
+
+            <!-- CAMADA 1: Identificação (sempre visível) -->
+            <Frame Margin="15,15,15,8" CornerRadius="16" Padding="20" HasShadow="True">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
+
+                    <!-- Avatar com iniciais -->
+                    <Frame Grid.Column="0"
+                           WidthRequest="65"
+                           HeightRequest="65"
+                           CornerRadius="32"
+                           BackgroundColor="#5B4FCF"
+                           Padding="0"
+                           HasShadow="False">
+                        <Label Text="{Binding Initials}"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Frame>
+
+                    <!-- Info principal -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                        <Label FontSize="18" FontAttributes="Bold">
+                            <Label.Text>
+                                <MultiBinding StringFormat="{}{0} {1}">
+                                    <Binding Path="Patient.FirstName"/>
+                                    <Binding Path="Patient.LastName"/>
+                                </MultiBinding>
+                            </Label.Text>
+                        </Label>
+                        <Label Text="{Binding Patient.DateOfBirth, StringFormat='Nascimento: {0:dd/MM/yyyy}'}"
+                               FontSize="13"
+                               TextColor="Gray"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- CAMADA 2: Linha do Tempo -->
+            <Frame Margin="15,8" CornerRadius="16" Padding="15" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="HISTÓRICO DE ATENDIMENTO"
+                           FontAttributes="Bold"
+                           FontSize="13"
+                           TextColor="Gray"/>
+
+                    <ActivityIndicator IsVisible="{Binding IsLoading}"
+                                       IsRunning="{Binding IsLoading}"
+                                       Color="#5B4FCF"/>
+
+                    <CollectionView ItemsSource="{Binding Timeline}"
+                                    EmptyView="Nenhum atendimento registrado.">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto,*" Padding="0,6" ColumnSpacing="12">
+
+                                    <!-- Indicador lateral colorido -->
+                                    <BoxView Grid.Column="0"
+                                             WidthRequest="4"
+                                             CornerRadius="2"
+                                             Color="{Binding TypeColor}"
+                                             VerticalOptions="Fill"/>
+
+                                    <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label Text="{Binding Title}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="14"/>
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding TypeLabel}"
+                                                   FontSize="11"
+                                                   TextColor="{Binding TypeColor}"
+                                                   VerticalOptions="Center"/>
+                                        </Grid>
+                                        <Label Text="{Binding Summary}"
+                                               FontSize="13"
+                                               TextColor="Gray"
+                                               LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                               FontSize="11"
+                                               TextColor="LightGray"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- CAMADA 3: Dados Sensíveis (oculta por padrão) -->
+            <Frame Margin="15,8,15,20" CornerRadius="16" Padding="15" HasShadow="True"
+                   BackgroundColor="#FFF8E1">
+                <VerticalStackLayout Spacing="12">
+
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="DADOS SENSÍVEIS"
+                               FontAttributes="Bold"
+                               FontSize="13"
+                               TextColor="#C0392B"
+                               VerticalOptions="Center"/>
+                        <Button Grid.Column="1"
+                                Text="{Binding SensitiveToggleText}"
+                                Command="{Binding ToggleSensitiveCommand}"
+                                BackgroundColor="#C0392B"
+                                TextColor="White"
+                                CornerRadius="8"
+                                FontSize="12"
+                                Padding="10,6"/>
+                    </Grid>
+
+                    <!-- Conteúdo oculto -->
+                    <VerticalStackLayout Spacing="8"
+                                         IsVisible="{Binding IsSensitiveVisible}">
+                        <BoxView HeightRequest="1" Color="LightGray"/>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label Grid.Column="0" Text="Telefone:" FontAttributes="Bold" FontSize="14"/>
+                            <Label Grid.Column="1" Text="{Binding Patient.Phone}" FontSize="14"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label Grid.Column="0" Text="E-mail:" FontAttributes="Bold" FontSize="14"/>
+                            <Label Grid.Column="1" Text="{Binding Patient.Email}" FontSize="14"/>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Placeholder quando oculto -->
+                    <Label Text="Clique em 'Exibir dados sensíveis' para visualizar."
+                           IsVisible="{Binding IsSensitiveVisible, Converter={x:StaticResource InverseBoolConverter}}"
+                           TextColor="Gray"
+                           FontSize="13"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

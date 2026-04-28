@@ -2,195 +2,179 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Salute.Views.Anamnesis.AnamnesisPage"
-             Title="Anamnese Odontológica"
-             BackgroundColor="{DynamicResource PageBackgroundColor}">
+             Title="Anamnese">
 
-    <ScrollView>
-        <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="10" RowSpacing="10">
+	<Grid RowDefinitions="Auto,Auto,*,Auto" Padding="15" RowSpacing="10">
 
-            <!-- Cabeçalho -->
-            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                <Picker x:Name="PatientPicker" 
-                        Grid.Row="0" Grid.Column="0"
-                        Title="Selecione o paciente"
-                        ItemsSource="{Binding Patients}"
-                        ItemDisplayBinding="{Binding FirstName}"
-                        SelectedItem="{Binding SelectedPatientId, Mode=TwoWay}"
-                        SelectedIndexChanged="OnPatientSelected"/>
+		<!-- Seleção de paciente -->
+		<Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+			<Picker Title="Selecione o paciente"
+                    ItemsSource="{Binding Patients}"
+                    ItemDisplayBinding="{Binding FirstName}"
+                    SelectedIndexChanged="OnPatientSelected"/>
+			<Button Grid.Column="1"
+                    Text="Limpar"
+                    Command="{Binding ClearCommand}"
+                    BackgroundColor="Orange"
+                    TextColor="White"
+                    CornerRadius="10"
+                    WidthRequest="80"/>
+		</Grid>
 
-                <Button Grid.Row="0" Grid.Column="1"
-                        Text="Limpar"
-                        Command="{Binding ClearCommand}"
-                        BackgroundColor="Orange"
-                        CornerRadius="10"
-                        WidthRequest="80"/>
+		<!-- Status -->
+		<Label Grid.Row="1"
+               Text="{Binding StatusMessage}"
+               HorizontalOptions="Center"
+               FontSize="13"
+               TextColor="Gray"/>
 
-                <Label Grid.Row="1" Grid.ColumnSpan="2"
-                       Text="{Binding StatusMessage}"
-                       FontSize="Small"
-                       TextColor="{Binding IsLoading, Converter={StaticResource LoadingToColorConverter}}"
-                       HorizontalOptions="Center"/>
-            </Grid>
+		<!-- Formulário -->
+		<ScrollView Grid.Row="2">
+			<VerticalStackLayout Spacing="12">
 
-            <!-- Tabs indicadoras -->
-            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*">
-                <Button Text="Geral" CornerRadius="10" BackgroundColor="LightGray"/>
-                <Button Grid.Column="1" Text="Saúde" CornerRadius="10"/>
-                <Button Grid.Column="2" Text="Odonto" CornerRadius="10"/>
-                <Button Grid.Column="3" Text="Hábitos" CornerRadius="10"/>
-            </Grid>
+				<!-- Queixa Principal -->
+				<Frame CornerRadius="12" Padding="15" HasShadow="True">
+					<VerticalStackLayout Spacing="10">
+						<Label Text="QUEIXA PRINCIPAL" FontAttributes="Bold" FontSize="14"/>
+						<Entry Placeholder="Motivo da consulta"
+                               Text="{Binding Anamnesis.MainComplaint}"/>
+						<Entry Placeholder="Sintomas associados"
+                               Text="{Binding Anamnesis.Symptoms}"/>
+						<Entry Placeholder="Há quanto tempo?"
+                               Text="{Binding Anamnesis.SymptomsDuration}"/>
+						<Picker Title="Nível de dor (1-10)"
+                                SelectedItem="{Binding Anamnesis.PainLevel}">
+							<Picker.Items>
+								<x:String>1 - Muito leve</x:String>
+								<x:String>2 - Leve</x:String>
+								<x:String>3 - Moderado</x:String>
+								<x:String>4 - Forte</x:String>
+								<x:String>5 - Muito forte</x:String>
+								<x:String>6 - Insuportável</x:String>
+							</Picker.Items>
+						</Picker>
+					</VerticalStackLayout>
+				</Frame>
 
-            <!-- Formulário Principal -->
-            <ScrollView Grid.Row="2">
-                <Grid RowSpacing="10" Padding="5">
+				<!-- Histórico Médico -->
+				<Frame CornerRadius="12" Padding="15" HasShadow="True">
+					<VerticalStackLayout Spacing="10">
+						<Label Text="HISTÓRICO MÉDICO" FontAttributes="Bold" FontSize="14"/>
+						<Entry Placeholder="Doenças pré-existentes"
+                               Text="{Binding Anamnesis.MedicalConditions}"/>
+						<Entry Placeholder="Alergias"
+                               Text="{Binding Anamnesis.Allergies}"/>
+						<Entry Placeholder="Medicamentos em uso"
+                               Text="{Binding Anamnesis.CurrentMedications}"/>
+						<Entry Placeholder="Cirurgias anteriores"
+                               Text="{Binding Anamnesis.PreviousSurgeries}"/>
+						<Entry Placeholder="Internações"
+                               Text="{Binding Anamnesis.Hospitalizations}"/>
+					</VerticalStackLayout>
+				</Frame>
 
-                    <!-- Seção: Queixa Principal -->
-                    <Frame Grid.Row="0" CornerRadius="15" BackgroundColor="White">
-                        <VerticalStackLayout Spacing="10">
-                            <Label Text="🦷 QUEIXA PRINCIPAL" FontAttributes="Bold" TextColor="DarkBlue"/>
-                            <Entry Placeholder="Qual o motivo da consulta?" 
-                                   Text="{Binding Anamnesis.MainComplaint}"/>
-                            <Entry Placeholder="Sintomas associados" 
-                                   Text="{Binding Anamnesis.Symptoms}"/>
-                            <Entry Placeholder="Há quanto tempo?" 
-                                   Text="{Binding Anamnesis.SymptomsDuration}"/>
-                            <Picker Title="Nível de dor (1-10)">
-                                <Picker.Items>
-                                    <x:String>1 - Muito leve</x:String>
-                                    <x:String>2 - Leve</x:String>
-                                    <x:String>3 - Moderado</x:String>
-                                    <x:String>4 - Forte</x:String>
-                                    <x:String>5 - Muito forte</x:String>
-                                    <x:String>6 - Insuportável</x:String>
-                                </Picker.Items>
-                            </Picker>
-                        </VerticalStackLayout>
-                    </Frame>
+				<!-- Histórico Odontológico -->
+				<Frame CornerRadius="12" Padding="15" HasShadow="True">
+					<VerticalStackLayout Spacing="10">
+						<Label Text="HISTÓRICO ODONTOLÓGICO" FontAttributes="Bold" FontSize="14"/>
+						<Entry Placeholder="Tratamentos anteriores"
+                               Text="{Binding Anamnesis.PreviousTreatments}"/>
+						<Entry Placeholder="Última visita ao dentista"
+                               Text="{Binding Anamnesis.LastDentalVisit}"/>
+						<Entry Placeholder="Hábitos de higiene"
+                               Text="{Binding Anamnesis.DentalHygiene}"/>
+						<Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="5">
+							<CheckBox IsChecked="{Binding Anamnesis.UsesDentalProsthesis}"/>
+							<Label Grid.Column="1" Text="Usa prótese?" VerticalOptions="Center"/>
+							<CheckBox Grid.Column="2" IsChecked="{Binding Anamnesis.HasBleedingGums}"/>
+							<Label Grid.Column="3" Text="Sangramento gengival?" VerticalOptions="Center"/>
+						</Grid>
+					</VerticalStackLayout>
+				</Frame>
 
-                    <!-- Seção: Histórico Médico -->
-                    <Frame Grid.Row="1" CornerRadius="15" BackgroundColor="White">
-                        <VerticalStackLayout Spacing="10">
-                            <Label Text="🏥 HISTÓRICO MÉDICO" FontAttributes="Bold" TextColor="DarkBlue"/>
-                            <Entry Placeholder="Doenças pré-existentes" 
-                                   Text="{Binding Anamnesis.MedicalConditions}"/>
-                            <Entry Placeholder="Alergias" 
-                                   Text="{Binding Anamnesis.Allergies}"/>
-                            <Entry Placeholder="Medicamentos em uso" 
-                                   Text="{Binding Anamnesis.CurrentMedications}"/>
-                            <Entry Placeholder="Cirurgias anteriores" 
-                                   Text="{Binding Anamnesis.PreviousSurgeries}"/>
-                            <Entry Placeholder="Internações" 
-                                   Text="{Binding Anamnesis.Hospitalizations}"/>
-                        </VerticalStackLayout>
-                    </Frame>
+				<!-- Hábitos -->
+				<Frame CornerRadius="12" Padding="15" HasShadow="True">
+					<VerticalStackLayout Spacing="10">
+						<Label Text="HÁBITOS" FontAttributes="Bold" FontSize="14"/>
+						<Entry Placeholder="Tabagismo" Text="{Binding Anamnesis.Smoking}"/>
+						<Entry Placeholder="Consumo de álcool" Text="{Binding Anamnesis.Alcohol}"/>
+						<Entry Placeholder="Alimentação" Text="{Binding Anamnesis.Diet}"/>
+						<Entry Placeholder="Atividade física" Text="{Binding Anamnesis.PhysicalActivity}"/>
+					</VerticalStackLayout>
+				</Frame>
 
-                    <!-- Seção: Histórico Odontológico -->
-                    <Frame Grid.Row="2" CornerRadius="15" BackgroundColor="White">
-                        <VerticalStackLayout Spacing="10">
-                            <Label Text="🪥 HISTÓRICO ODONTOLÓGICO" FontAttributes="Bold" TextColor="DarkBlue"/>
-                            <Entry Placeholder="Tratamentos anteriores" 
-                                   Text="{Binding Anamnesis.PreviousTreatments}"/>
-                            <Entry Placeholder="Última visita ao dentista" 
-                                   Text="{Binding Anamnesis.LastDentalVisit}"/>
-                            <Entry Placeholder="Hábitos de higiene" 
-                                   Text="{Binding Anamnesis.DentalHygiene}"/>
+				<!-- Sinais Vitais -->
+				<Frame CornerRadius="12" Padding="15" HasShadow="True">
+					<VerticalStackLayout Spacing="10">
+						<Label Text="SINAIS VITAIS" FontAttributes="Bold" FontSize="14"/>
+						<Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="5">
+							<Entry Placeholder="Sistólica"
+                                   Text="{Binding Anamnesis.BloodPressureSystolic}"
+                                   Keyboard="Numeric"/>
+							<Label Grid.Column="1" Text="/" VerticalOptions="Center" FontSize="18"/>
+							<Entry Grid.Column="2" Placeholder="Diastólica"
+                                   Text="{Binding Anamnesis.BloodPressureDiastolic}"
+                                   Keyboard="Numeric"/>
+						</Grid>
+						<Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+							<Entry Placeholder="Freq. cardíaca (bpm)"
+                                   Text="{Binding Anamnesis.HeartRate}"
+                                   Keyboard="Numeric"/>
+							<Entry Grid.Column="1" Placeholder="Temperatura (°C)"
+                                   Text="{Binding Anamnesis.Temperature}"
+                                   Keyboard="Numeric"/>
+						</Grid>
+					</VerticalStackLayout>
+				</Frame>
 
-                            <Grid ColumnDefinitions="*,*">
-                                <CheckBox IsChecked="{Binding Anamnesis.UsesDentalProsthesis}"/>
-                                <Label Text="Usa prótese dentária?"/>
-                                <CheckBox Grid.Column="1" IsChecked="{Binding Anamnesis.HasBleedingGums}"/>
-                                <Label Grid.Column="1" Text="Sangramento gengival?"/>
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Frame>
+				<!-- Observações -->
+				<Frame CornerRadius="12" Padding="15" HasShadow="True">
+					<VerticalStackLayout Spacing="10">
+						<Label Text="OBSERVAÇÕES" FontAttributes="Bold" FontSize="14"/>
+						<Editor Placeholder="Observações adicionais..."
+                                Text="{Binding Anamnesis.Observations}"
+                                HeightRequest="100"/>
+					</VerticalStackLayout>
+				</Frame>
 
-                    <!-- Seção: Hábitos -->
-                    <Frame Grid.Row="3" CornerRadius="15" BackgroundColor="White">
-                        <VerticalStackLayout Spacing="10">
-                            <Label Text="🍷 HÁBITOS" FontAttributes="Bold" TextColor="DarkBlue"/>
-                            <Entry Placeholder="Tabagismo" Text="{Binding Anamnesis.Smoking}"/>
-                            <Entry Placeholder="Consumo de álcool" Text="{Binding Anamnesis.Alcohol}"/>
-                            <Entry Placeholder="Alimentação" Text="{Binding Anamnesis.Diet}"/>
-                            <Entry Placeholder="Atividade física" Text="{Binding Anamnesis.PhysicalActivity}"/>
-                        </VerticalStackLayout>
-                    </Frame>
+				<!-- Histórico -->
+				<Frame CornerRadius="12" Padding="15" HasShadow="True">
+					<VerticalStackLayout Spacing="8">
+						<Label Text="HISTÓRICO DE ANAMNESES" FontAttributes="Bold" FontSize="14"/>
+						<ListView ItemsSource="{Binding AnamnesisHistory}"
+                                  HeightRequest="150"
+                                  HasUnevenRows="True">
+							<ListView.ItemTemplate>
+								<DataTemplate>
+									<TextCell
+                                        Text="{Binding CreatedAt, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                        Detail="{Binding MainComplaint, StringFormat='Queixa: {0}'}"/>
+								</DataTemplate>
+							</ListView.ItemTemplate>
+						</ListView>
+					</VerticalStackLayout>
+				</Frame>
 
-                    <!-- Seção: Sinais Vitais -->
-                    <Frame Grid.Row="4" CornerRadius="15" BackgroundColor="White">
-                        <VerticalStackLayout Spacing="10">
-                            <Label Text="❤️ SINAIS VITAIS" FontAttributes="Bold" TextColor="DarkBlue"/>
-                            <HorizontalStackLayout Spacing="10">
-                                <Entry Placeholder="Pressão sistólica" 
-                                       Text="{Binding Anamnesis.BloodPressureSystolic}"
-                                       Keyboard="Numeric"
-                                       WidthRequest="100"/>
-                                <Label Text="/"/>
-                                <Entry Placeholder="Diastólica" 
-                                       Text="{Binding Anamnesis.BloodPressureDiastolic}"
-                                       Keyboard="Numeric"
-                                       WidthRequest="100"/>
-                            </HorizontalStackLayout>
-                            <Grid ColumnDefinitions="*,*">
-                                <Entry Placeholder="Frequência cardíaca" 
-                                       Text="{Binding Anamnesis.HeartRate}"
-                                       Keyboard="Numeric"/>
-                                <Entry Placeholder="Temperatura (°C)" 
-                                       Text="{Binding Anamnesis.Temperature}"
-                                       Keyboard="Numeric"/>
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Frame>
+				<ActivityIndicator IsVisible="{Binding IsLoading}"
+                                   IsRunning="{Binding IsLoading}"
+                                   Color="#5B4FCF"
+                                   HorizontalOptions="Center"/>
+			</VerticalStackLayout>
+		</ScrollView>
 
-                    <!-- Seção: Observações -->
-                    <Frame Grid.Row="5" CornerRadius="15" BackgroundColor="White">
-                        <VerticalStackLayout Spacing="10">
-                            <Label Text="📝 OBSERVAÇÕES" FontAttributes="Bold" TextColor="DarkBlue"/>
-                            <Editor Placeholder="Observações adicionais..." 
-                                    Text="{Binding Anamnesis.Observations}"
-                                    HeightRequest="100"/>
-                        </VerticalStackLayout>
-                    </Frame>
-                </Grid>
-            </ScrollView>
-
-            <!-- Botões de Ação -->
-            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="10">
-                <Button Text="🤖 Gerar com IA"
-                        Command="{Binding GenerateWithAICommand}"
-                        BackgroundColor="Purple"
-                        TextColor="White"
-                        CornerRadius="10"
-                        IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBoolean}}"/>
-
-                <Button Grid.Column="1"
-                        Text="💾 Salvar Anamnese"
-                        Command="{Binding SaveCommand}"
-                        BackgroundColor="Green"
-                        TextColor="White"
-                        CornerRadius="10"
-                        IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBoolean}}"/>
-            </Grid>
-
-            <!-- Histórico -->
-            <Frame Grid.Row="4" CornerRadius="15" BackgroundColor="LightGray">
-                <VerticalStackLayout>
-                    <Label Text="📋 HISTÓRICO DE ANAMNESES" FontAttributes="Bold"/>
-                    <ListView ItemsSource="{Binding AnamnesisHistory}" HeightRequest="150">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <TextCell Text="{Binding CreatedAt, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
-                                          Detail="{Binding MainComplaint, StringFormat='Queixa: {0}'}"/>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </VerticalStackLayout>
-            </Frame>
-
-            <ActivityIndicator Grid.Row="5"
-                               IsVisible="{Binding IsLoading}"
-                               IsRunning="{Binding IsLoading}"
-                               Color="Blue"
-                               HorizontalOptions="Center"/>
-        </Grid>
-    </ScrollView>
+		<!-- Botões de ação -->
+		<Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="10">
+			<Button Text="Gerar com IA"
+                    BackgroundColor="#7B2FBE"
+                    TextColor="White"
+                    CornerRadius="10"
+                    IsEnabled="False"/>
+			<Button Grid.Column="1"
+                    Text="Salvar Anamnese"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="#2E7D32"
+                    TextColor="White"
+                    CornerRadius="10"/>
+		</Grid>
+	</Grid>
 </ContentPage>

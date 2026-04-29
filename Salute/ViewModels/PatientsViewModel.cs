@@ -10,6 +10,7 @@ public class PatientsViewModel
     private readonly IPatientRepository _patientRepository;
 
     public ObservableCollection<Patient> Patients { get; set; }
+    public string StatusMessage { get; set; } = string.Empty;
     public ICommand LoadPatientsCommand { get; }
     public ICommand AddPatientCommand { get; }
 
@@ -19,28 +20,43 @@ public class PatientsViewModel
         Patients = new ObservableCollection<Patient>();
         LoadPatientsCommand = new Command(async () => await LoadPatients());
         AddPatientCommand = new Command(async () => await AddDummyPatient());
-
-        Task.Run(async () => await LoadPatients());
     }
 
     private async Task LoadPatients()
     {
-        var patientsFromDb = await _patientRepository.GetAllAsync();
-        Patients.Clear();
-        foreach (var p in patientsFromDb)
-            Patients.Add(p);
+        try
+        {
+            Console.WriteLine("LoadPatients: iniciando...");
+            var patientsFromDb = await _patientRepository.GetAllAsync();
+            Console.WriteLine($"LoadPatients: {patientsFromDb.Count()} pacientes encontrados");
+            Patients.Clear();
+            foreach (var p in patientsFromDb)
+                Patients.Add(p);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERRO LoadPatients: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+        }
     }
 
     private async Task AddDummyPatient()
     {
-        var newPatient = new Patient
+        try
         {
-            FirstName = "Teste",
-            LastName = "DB",
-            Email = "teste@db.com",
-            Phone = "(11) 90000-0000"
-        };
-        await _patientRepository.AddAsync(newPatient);
-        await LoadPatients();
+            var newPatient = new Patient
+            {
+                FirstName = "Teste",
+                LastName = "DB",
+                Email = "teste@db.com",
+                Phone = "(11) 90000-0000"
+            };
+            await _patientRepository.AddAsync(newPatient);
+            await LoadPatients();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERRO AddDummyPatient: {ex.Message}");
+        }
     }
 }

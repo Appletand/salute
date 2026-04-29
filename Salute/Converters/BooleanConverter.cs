@@ -4,18 +4,19 @@ namespace Salute.Converters;
 
 public class BooleanConverter : IValueConverter
 {
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => (bool?)value ?? false;
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotImplementedException();
-}
+    public bool Invert { get; set; } = false;
 
-public class InverseBooleanConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => !(bool?)value ?? false;
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotImplementedException();
-}
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool b)
+            return Invert ? !b : b;
+        return !Invert;
+    }
 
-public class LoadingToColorConverter : IValueConverter
-{
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => (bool?)value == true ? Colors.Gray : Colors.Transparent;
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotImplementedException();
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool b)
+            return Invert ? !b : b;
+        return !Invert;
+    }
 }

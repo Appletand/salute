@@ -6,89 +6,37 @@
 
 	<Grid RowDefinitions="Auto,*,Auto" Padding="15" RowSpacing="10">
 
-		<!-- Cabeçalho -->
 		<Grid Grid.Row="0" ColumnDefinitions="*,Auto">
-			<Label Text="Pacientes"
-                   FontSize="22"
-                   FontAttributes="Bold"
-                   VerticalOptions="Center"/>
-			<Button Grid.Column="1"
-                    Text="+ Novo"
-                    Clicked="OnAddPatientClicked"
-                    BackgroundColor="#5B4FCF"
-                    TextColor="White"
-                    CornerRadius="10"
-                    Padding="12,8"/>
+			<Label Text="Pacientes" FontSize="22" FontAttributes="Bold" VerticalOptions="Center"/>
+			<Button Grid.Column="1" Text="+ Novo" Clicked="OnAddPatientClicked"
+                    BackgroundColor="#5B4FCF" TextColor="White" CornerRadius="10" Padding="12,8"/>
 		</Grid>
 
-		<!-- Lista -->
 		<CollectionView Grid.Row="1"
                         ItemsSource="{Binding Patients}"
-                        EmptyView="Nenhum paciente cadastrado."
-                        SelectionMode="None">
+                        EmptyView="Nenhum paciente cadastrado.">
 			<CollectionView.ItemTemplate>
 				<DataTemplate>
-					<Frame Margin="0,5" CornerRadius="12" Padding="15" HasShadow="True">
-						<Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-
-							<!-- Avatar com iniciais -->
-							<Frame Grid.Column="0"
-                                   WidthRequest="45"
-                                   HeightRequest="45"
-                                   CornerRadius="22"
-                                   BackgroundColor="#5B4FCF"
-                                   Padding="0"
-                                   HasShadow="False">
-								<Label FontSize="16"
-                                       FontAttributes="Bold"
-                                       TextColor="White"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center">
-									<Label.Text>
-										<MultiBinding StringFormat="{}{0}{1}">
-											<Binding Path="FirstName[0]"/>
-											<Binding Path="LastName[0]"/>
-										</MultiBinding>
-									</Label.Text>
-								</Label>
-							</Frame>
-
-							<!-- Info -->
-							<VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
-								<Label FontSize="15" FontAttributes="Bold">
-									<Label.Text>
-										<MultiBinding StringFormat="{}{0} {1}">
-											<Binding Path="FirstName"/>
-											<Binding Path="LastName"/>
-										</MultiBinding>
-									</Label.Text>
-								</Label>
-								<Label Text="{Binding DateOfBirth, StringFormat='{0:dd/MM/yyyy}'}"
-                                       FontSize="12"
-                                       TextColor="Gray"/>
-							</VerticalStackLayout>
-
-							<!-- Botão Ver -->
-							<Button Grid.Column="2"
-                                    Text="Ver"
-                                    BackgroundColor="#5B4FCF"
-                                    TextColor="White"
-                                    CornerRadius="8"
-                                    WidthRequest="55"
-                                    VerticalOptions="Center"
-                                    CommandParameter="{Binding .}"
-                                    Clicked="OnViewPatientClicked"/>
-						</Grid>
-					</Frame>
+					<Grid ColumnDefinitions="*,Auto" Padding="5,8">
+						<VerticalStackLayout Grid.Column="0" Spacing="3">
+							<Label FontSize="15" FontAttributes="Bold"
+                                   Text="{Binding FirstName}"/>
+							<Label FontSize="12" TextColor="Gray"
+                                   Text="{Binding DateOfBirth, StringFormat='{0:dd/MM/yyyy}'}"/>
+						</VerticalStackLayout>
+						<Button Grid.Column="1" Text="Ver"
+                                BackgroundColor="#5B4FCF" TextColor="White"
+                                CornerRadius="8" WidthRequest="55"
+                                VerticalOptions="Center"
+                                CommandParameter="{Binding .}"
+                                Clicked="OnViewPatientClicked"/>
+					</Grid>
 				</DataTemplate>
 			</CollectionView.ItemTemplate>
 		</CollectionView>
 
-		<!-- Rodapé -->
 		<Label Grid.Row="2"
                Text="{Binding Patients.Count, StringFormat='{0} paciente(s)'}"
-               HorizontalOptions="Center"
-               TextColor="Gray"
-               FontSize="13"/>
+               HorizontalOptions="Center" TextColor="Gray" FontSize="13"/>
 	</Grid>
 </ContentPage>

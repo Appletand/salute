@@ -21,9 +21,7 @@
                     <Entry Placeholder="Sobrenome *"
                            Text="{Binding LastName}"/>
                     <DatePicker Date="{Binding DateOfBirth}"
-                                Format="dd/MM/yyyy"
-                                MaximumDate="{x:Static sys:DateTime.Today}"
-                                xmlns:sys="clr-namespace:System;assembly=mscorlib"/>
+                                Format="dd/MM/yyyy"/>
                 </VerticalStackLayout>
             </Frame>
 

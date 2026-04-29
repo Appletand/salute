@@ -9,34 +9,69 @@ public partial class PatientsPage : ContentPage
 
     public PatientsPage(PatientsViewModel viewModel)
     {
-        InitializeComponent();
-        _viewModel = viewModel;
-        BindingContext = _viewModel;
+        try
+        {
+            InitializeComponent();
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERRO PatientsPage constructor: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+            throw;
+        }
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        _viewModel.LoadPatientsCommand.Execute(null);
+        Console.WriteLine("PatientsPage apareceu");
+        try
+        {
+            _viewModel.LoadPatientsCommand.Execute(null);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERRO LoadPatients: {ex.Message}");
+        }
     }
 
     private async void OnAddPatientClicked(object sender, EventArgs e)
     {
-        var page = Handler?.MauiContext?.Services.GetService<AddPatientPage>();
-        if (page != null)
-            await Navigation.PushAsync(page);
+        try
+        {
+            var page = Handler?.MauiContext?.Services.GetService<AddPatientPage>();
+            if (page != null)
+                await Navigation.PushAsync(page);
+            else
+                Console.WriteLine("ERRO: AddPatientPage não resolvida pelo DI");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERRO OnAddPatientClicked: {ex.Message}");
+        }
     }
 
     private async void OnViewPatientClicked(object sender, EventArgs e)
     {
-        if (sender is Button btn && btn.CommandParameter is Patient patient)
+        try
         {
-            var page = Handler?.MauiContext?.Services.GetService<PatientDetailPage>();
-            if (page != null)
+            if (sender is Button btn && btn.CommandParameter is Patient patient)
             {
-                await Navigation.PushAsync(page);
-                await page.LoadPatient(patient.Id);
+                var page = Handler?.MauiContext?.Services.GetService<PatientDetailPage>();
+                if (page != null)
+                {
+                    await Navigation.PushAsync(page);
+                    await page.LoadPatient(patient.Id);
+                }
+                else
+                    Console.WriteLine("ERRO: PatientDetailPage não resolvida pelo DI");
             }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERRO OnViewPatientClicked: {ex.Message}");
         }
     }
 }

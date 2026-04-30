@@ -1,59 +1,130 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Salute.ViewModels"
              x:Class="Salute.Views.Patients.AddPatientPage"
-             Title="Novo Paciente">
+             x:DataType="vm:AddPatientViewModel"
+             Title="Novo Paciente"
+             BackgroundColor="#F5F7FA">
 
-    <ScrollView Padding="20">
-        <VerticalStackLayout Spacing="15">
+	<ScrollView>
+		<VerticalStackLayout Padding="24" Spacing="16">
 
-            <Label Text="Cadastrar Paciente"
-                   FontSize="22"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
+			<Border BackgroundColor="White"
+                    StrokeShape="RoundRectangle 16"
+                    Stroke="#E5E7EB"
+                    Padding="20">
+				<Border.Shadow>
+					<Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.06" />
+				</Border.Shadow>
+				<VerticalStackLayout Spacing="16">
 
-            <Frame CornerRadius="12" Padding="15" HasShadow="True">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="DADOS PESSOAIS" FontAttributes="Bold" FontSize="13" TextColor="Gray"/>
+					<Label Text="Dados do Paciente"
+                           FontSize="17"
+                           FontAttributes="Bold"
+                           TextColor="#1A1A2E" />
 
-                    <Entry Placeholder="Nome *"
-                           Text="{Binding FirstName}"/>
-                    <Entry Placeholder="Sobrenome *"
-                           Text="{Binding LastName}"/>
-                    <DatePicker Date="{Binding DateOfBirth}"
-                                Format="dd/MM/yyyy"/>
-                </VerticalStackLayout>
-            </Frame>
+					<VerticalStackLayout Spacing="4">
+						<Label Text="Nome *" TextColor="#374151" FontSize="13" />
+						<Border BackgroundColor="#F9FAFB"
+                                StrokeShape="RoundRectangle 8"
+                                Stroke="#D1D5DB"
+                                Padding="12,0">
+							<Entry Text="{Binding FirstName}"
+                                   Placeholder="Nome"
+                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="#1A1A2E"
+                                   FontSize="15" />
+						</Border>
+					</VerticalStackLayout>
 
-            <Frame CornerRadius="12" Padding="15" HasShadow="True">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="CONTATO" FontAttributes="Bold" FontSize="13" TextColor="Gray"/>
-                    <Entry Placeholder="Telefone"
-                           Text="{Binding Phone}"
-                           Keyboard="Telephone"/>
-                    <Entry Placeholder="E-mail"
-                           Text="{Binding Email}"
-                           Keyboard="Email"/>
-                </VerticalStackLayout>
-            </Frame>
+					<VerticalStackLayout Spacing="4">
+						<Label Text="Sobrenome *" TextColor="#374151" FontSize="13" />
+						<Border BackgroundColor="#F9FAFB"
+                                StrokeShape="RoundRectangle 8"
+                                Stroke="#D1D5DB"
+                                Padding="12,0">
+							<Entry Text="{Binding LastName}"
+                                   Placeholder="Sobrenome"
+                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="#1A1A2E"
+                                   FontSize="15" />
+						</Border>
+					</VerticalStackLayout>
 
-            <Label Text="{Binding StatusMessage}"
-                   HorizontalOptions="Center"
-                   TextColor="#C0392B"
-                   FontSize="13"/>
+					<VerticalStackLayout Spacing="4">
+						<Label Text="Telefone" TextColor="#374151" FontSize="13" />
+						<Border BackgroundColor="#F9FAFB"
+                                StrokeShape="RoundRectangle 8"
+                                Stroke="#D1D5DB"
+                                Padding="12,0">
+							<Entry Text="{Binding Phone}"
+                                   Placeholder="(00) 00000-0000"
+                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="#1A1A2E"
+                                   FontSize="15"
+                                   Keyboard="Telephone" />
+						</Border>
+					</VerticalStackLayout>
 
-            <Button Text="Salvar Paciente"
+					<VerticalStackLayout Spacing="4">
+						<Label Text="E-mail" TextColor="#374151" FontSize="13" />
+						<Border BackgroundColor="#F9FAFB"
+                                StrokeShape="RoundRectangle 8"
+                                Stroke="#D1D5DB"
+                                Padding="12,0">
+							<Entry Text="{Binding Email}"
+                                   Placeholder="email@exemplo.com"
+                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="#1A1A2E"
+                                   FontSize="15"
+                                   Keyboard="Email" />
+						</Border>
+					</VerticalStackLayout>
+
+					<VerticalStackLayout Spacing="4">
+						<Label Text="Data de Nascimento" TextColor="#374151" FontSize="13" />
+						<Border BackgroundColor="#F9FAFB"
+                                StrokeShape="RoundRectangle 8"
+                                Stroke="#D1D5DB"
+                                Padding="12,8">
+							<DatePicker Date="{Binding DateOfBirth}"
+                                        TextColor="#1A1A2E"
+                                        FontSize="15"
+                                        Format="dd/MM/yyyy" />
+						</Border>
+					</VerticalStackLayout>
+
+				</VerticalStackLayout>
+			</Border>
+
+			<Label Text="{Binding StatusMessage}"
+                   TextColor="#374151"
+                   FontSize="13"
+                   HorizontalOptions="Center">
+				<Label.Triggers>
+					<DataTrigger TargetType="Label"
+                                 Binding="{Binding StatusMessage}"
+                                 Value="">
+						<Setter Property="IsVisible" Value="False" />
+					</DataTrigger>
+				</Label.Triggers>
+			</Label>
+
+			<ActivityIndicator IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
+                               Color="#0D6E6E"
+                               HorizontalOptions="Center" />
+
+			<Button Text="Salvar Paciente"
                     Command="{Binding SaveCommand}"
-                    BackgroundColor="#5B4FCF"
+                    BackgroundColor="#0D6E6E"
                     TextColor="White"
-                    CornerRadius="12"
-                    HeightRequest="50"
-                    IsEnabled="{Binding IsLoading, Converter={x:StaticResource InverseBoolConverter}}"/>
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    HeightRequest="52"
+                    CornerRadius="12" />
 
-            <ActivityIndicator IsVisible="{Binding IsLoading}"
-                               IsRunning="{Binding IsLoading}"
-                               Color="#5B4FCF"
-                               HorizontalOptions="Center"/>
-        </VerticalStackLayout>
-    </ScrollView>
+		</VerticalStackLayout>
+	</ScrollView>
 </ContentPage>

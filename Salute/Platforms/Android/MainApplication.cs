@@ -1,7 +1,8 @@
 using Android.App;
 using Android.Runtime;
+using Salute;
 
-namespace SaluteFuncional;
+namespace Salute.Platforms.Android;
 
 [Application]
 public class MainApplication : MauiApplication

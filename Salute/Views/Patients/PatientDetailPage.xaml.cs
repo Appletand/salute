@@ -13,8 +13,14 @@ public partial class PatientDetailPage : ContentPage
         BindingContext = _viewModel;
     }
 
-    public async Task LoadPatient(int patientId)
+    public async Task LoadPatient(int id)
     {
-        await _viewModel.LoadAsync(patientId);
+        await _viewModel.LoadPatientAsync(id);
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await _viewModel.LoadAsync();
     }
 }

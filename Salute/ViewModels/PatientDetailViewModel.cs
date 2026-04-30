@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Salute.Interfaces;
 using Salute.Models;
+using Salute.Services;
 
 namespace Salute.ViewModels;
 
@@ -11,6 +12,7 @@ public class PatientDetailViewModel : INotifyPropertyChanged
 {
     private readonly IPatientRepository _patientRepository;
     private readonly IAnamnesisRepository _anamnesisRepository;
+    private readonly NavigationState _navigationState;
 
     private Patient _patient = new();
     private bool _isSensitiveVisible;
@@ -48,28 +50,39 @@ public class PatientDetailViewModel : INotifyPropertyChanged
     public ICommand ToggleSensitiveCommand { get; }
     public ICommand LoadCommand { get; }
 
-    public PatientDetailViewModel(IPatientRepository patientRepository, IAnamnesisRepository anamnesisRepository)
+    public PatientDetailViewModel(
+        IPatientRepository patientRepository,
+        IAnamnesisRepository anamnesisRepository,
+        NavigationState navigationState)
     {
         _patientRepository = patientRepository;
         _anamnesisRepository = anamnesisRepository;
+        _navigationState = navigationState;
 
         ToggleSensitiveCommand = new Command(() => IsSensitiveVisible = !IsSensitiveVisible);
-        LoadCommand = new Command<int>(async (id) => await LoadAsync(id));
+        LoadCommand = new Command(async () => await LoadAsync());
     }
 
-    public async Task LoadAsync(int patientId)
+    public async Task LoadPatientAsync(int id)
     {
+        _navigationState.SelectedPatientId = id;
+        await LoadAsync();
+    }
+
+    public async Task LoadAsync()
+    {
+        var patientId = _navigationState.SelectedPatientId;
+        if (patientId is null) return;
+
         try
         {
             IsLoading = true;
             Timeline.Clear();
 
-            // Carrega dados do paciente
             var patients = await _patientRepository.GetAllAsync();
             Patient = patients.FirstOrDefault(p => p.Id == patientId) ?? new Patient();
 
-            // Anamneses
-            var anamneses = await _anamnesisRepository.GetByPatientIdAsync(patientId);
+            var anamneses = await _anamnesisRepository.GetByPatientIdAsync(patientId.Value);
             foreach (var a in anamneses)
             {
                 Timeline.Add(new TimelineItem
@@ -80,8 +93,6 @@ public class PatientDetailViewModel : INotifyPropertyChanged
                     Summary = a.MainComplaint
                 });
             }
-
-            // Appointments e ClinicalNotes virão aqui quando os repositórios existirem
 
             var sorted = Timeline.OrderByDescending(t => t.Date).ToList();
             Timeline.Clear();

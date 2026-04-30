@@ -41,10 +41,11 @@ public static class MauiProgram
             builder.Services.AddScoped<IAnamnesisRepository, AnamnesisRepository>();
 
             // Services
-            builder.Services.AddScoped<IGeminiService, MockGeminiService>();
+            builder.Services.AddScoped<IGeminiService, GeminiService>();
 
             // ViewModels
             builder.Services.AddTransient<PatientsViewModel>();
+            builder.Services.AddSingleton<NavigationState>();
             builder.Services.AddTransient<PatientDetailViewModel>();
             builder.Services.AddTransient<AddPatientViewModel>();
             builder.Services.AddTransient<AnamnesisViewModel>();

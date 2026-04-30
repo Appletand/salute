@@ -11,8 +11,22 @@ public partial class AddPatientPage : ContentPage
         InitializeComponent();
         _viewModel = viewModel;
         BindingContext = _viewModel;
-        _viewModel.OnSaved += async () =>
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-                await Navigation.PopAsync());
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.OnSaved += OnPatientSaved;
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _viewModel.OnSaved -= OnPatientSaved;
+    }
+
+    private async void OnPatientSaved()
+    {
+        await Shell.Current.GoToAsync("..");
     }
 }

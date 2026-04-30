@@ -30,7 +30,7 @@ jobs:
 
       - name: Build iOS (No-Provisioning)
         run: |
-          dotnet build Salute/Salute.csproj \
+          dotnet build Salute/Salute.csproj -f net10.0-ios
             -f net10.0-ios \
             -c Release \
             -p:BuildIpa=false \

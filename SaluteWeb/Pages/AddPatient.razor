@@ -1,0 +1,75 @@
+﻿@page "/patients/add"
+@using SaluteWeb.Interfaces
+@using SaluteWeb.Models
+@inject IPatientRepository PatientRepo
+@inject NavigationManager Nav
+
+<div class="page-header">
+    <button class="btn-back" @onclick='() => Nav.NavigateTo("/patients")'>← Voltar</button>
+    <h2>Novo Paciente</h2>
+</div>
+
+<div class="card">
+    <h3>Dados do Paciente</h3>
+    
+    <div class="form-group">
+        <label>Nome *</label>
+        <input @bind="_patient.FirstName" placeholder="Nome" />
+    </div>
+
+    <div class="form-group">
+        <label>Sobrenome *</label>
+        <input @bind="_patient.LastName" placeholder="Sobrenome" />
+    </div>
+
+    <div class="form-group">
+        <label>Telefone</label>
+        <input @bind="_patient.Phone" placeholder="(00) 00000-0000" type="tel" />
+    </div>
+
+    <div class="form-group">
+        <label>E-mail</label>
+        <input @bind="_patient.Email" placeholder="email@exemplo.com" type="email" />
+    </div>
+
+    <div class="form-group">
+        <label>Data de Nascimento</label>
+        <input @bind="_patient.DateOfBirth" type="date" />
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(_status))
+{
+    <p class="status">@_status</p>
+}
+
+<button class="btn-primary" @onclick="SaveAsync" disabled="@_loading">
+    @(_loading ? "Salvando..." : "Salvar Paciente")
+</button>
+
+@code {
+    private Patient _patient = new();
+    private bool _loading;
+    private string _status = string.Empty;
+
+    private async Task SaveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_patient.FirstName) || string.IsNullOrWhiteSpace(_patient.LastName))
+        {
+            _status = "Nome e sobrenome são obrigatórios.";
+            return;
+        }
+
+        try
+        {
+            _loading = true;
+            await PatientRepo.AddAsync(_patient);
+            Nav.NavigateTo("/patients");
+        }
+        catch (Exception ex) 
+        { 
+            _status = $"Erro ao salvar: {ex.Message}"; 
+        }
+        finally { _loading = false; }
+    }
+}

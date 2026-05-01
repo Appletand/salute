@@ -1,0 +1,96 @@
+@page "/patients/{Id:int}"
+@using SaluteWeb.Interfaces
+@using SaluteWeb.Models
+@inject IPatientRepository PatientRepo
+@inject IAnamnesisRepository AnamnesisRepo
+@inject NavigationManager Nav
+
+<div class="page-header">
+    <div class="header-left">
+        <button class="btn-back" @onclick='() => Nav.NavigateTo("/patients")'>← Voltar</button>
+        <div class="avatar">@_patient.Initials</div>
+    </div>
+    <div class="header-actions">
+        <button class="btn-secondary" @onclick='() => Nav.NavigateTo($"/patients/edit/{Id}")'>Editar Dados</button>
+    </div>
+</div>
+
+@if (_loading)
+{
+    <div class="loading">Carregando...</div>
+}
+else
+{
+    <div class="card">
+        <div class="patient-info-main">
+            <h2>@_patient.FirstName @_patient.LastName</h2>
+            <div class="info-grid">
+                <span><strong>Telefone:</strong> @_patient.Phone</span>
+                <span><strong>E-mail:</strong> @_patient.Email</span>
+                <span><strong>Nascimento:</strong> @_patient.DateOfBirth.ToString("dd/MM/yyyy")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-header section-header">
+        <h3>Anamneses</h3>
+        <button class="btn-primary" @onclick='() => Nav.NavigateTo($"/patients/{Id}/anamnesis/add")'>+ Nova Anamnese</button>
+    </div>
+
+    @if (!_anamneses.Any())
+    {
+        <div class="empty-state">
+            <p>Nenhuma anamnese registrada para este paciente.</p>
+        </div>
+    }
+    else
+    {
+        <div class="anamnesis-list">
+            @foreach (var a in _anamneses)
+            {
+                <div class="patient-card clickable" @onclick='() => Nav.NavigateTo($"/patients/{Id}/anamnesis/{a.Id}")'>
+                    <div class="info">
+                        <strong>@a.CreatedAt.ToString("dd/MM/yyyy HH:mm")</strong>
+                        <span class="complaint-tag">@a.MainComplaint</span>
+                    </div>
+                    <div class="arrow">→</div>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Patient _patient = new();
+    private List<Anamnesis> _anamneses = [];
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            var p = await PatientRepo.GetByIdAsync(Id);
+            if (p == null)
+            {
+                Nav.NavigateTo("/patients");
+                return;
+            }
+            _patient = p;
+            
+            var data = await AnamnesisRepo.GetAllAsync();
+            _anamneses = data.Where(a => a.PatientId == Id)
+                            .OrderByDescending(a => a.CreatedAt)
+                            .ToList();
+        }
+        catch (Exception)
+        {
+            // Erro silencioso ou log de hardening
+        }
+        finally 
+        { 
+            _loading = false; 
+        }
+    }
+}

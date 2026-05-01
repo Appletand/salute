@@ -1,0 +1,80 @@
+@page "/patients"
+@using SaluteWeb.Interfaces
+@using SaluteWeb.Models
+@inject IPatientRepository PatientRepo
+@inject NavigationManager Nav
+
+<div class="page-header">
+    <h2>Pacientes</h2>
+    <button class="btn-primary" @onclick='() => Nav.NavigateTo("/patients/add")'>+ Novo</button>
+</div>
+
+@if (_loading)
+{
+    <div class="loading">Carregando...</div>
+}
+else if (_patients == null || !_patients.Any())
+{
+    <div class="empty">
+        <p>Nenhum paciente cadastrado.</p>
+        <small>Toque em + para adicionar.</small>
+    </div>
+}
+else
+{
+    @foreach (var p in _patients)
+    {
+        <div class="patient-card" @onclick='() => Nav.NavigateTo($"/patients/{p.Id}")' style="cursor: pointer;">
+            <div class="avatar">@GetInitials(p)</div>
+            <div class="info">
+                <strong>@p.FirstName @p.LastName</strong>
+                <span>@p.Phone</span>
+                <small>@p.Email</small>
+            </div>
+        </div>
+    }
+}
+
+@if (!string.IsNullOrEmpty(_status))
+{
+    <p class="status">@_status</p>
+}
+
+@code {
+    private List<Patient> _patients = new();
+    private bool _loading;
+    private string _status = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        _loading = true;
+        _status = string.Empty;
+        try
+        {
+            var result = await PatientRepo.GetAllAsync();
+            _patients = result?.ToList() ?? new List<Patient>();
+        }
+        catch (Exception ex) 
+        { 
+            _status = "Erro de conexão com a API local."; 
+            Console.WriteLine($"[Error] {ex.Message}"); 
+        }
+        finally 
+        { 
+            _loading = false; 
+        }
+    }
+
+    private string GetInitials(Patient p)
+    {
+        if (string.IsNullOrWhiteSpace(p.FirstName)) return "?";
+        var first = p.FirstName[0];
+        var last = !string.IsNullOrWhiteSpace(p.LastName) ? p.LastName[0].ToString() : "";
+        return $"{first}{last}".ToUpper();
+    }
+}

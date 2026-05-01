@@ -1,0 +1,69 @@
+@page "/"
+@using SaluteWeb.Interfaces
+@using SaluteWeb.Models
+@inject IPatientRepository PatientRepo
+@inject NavigationManager Nav
+
+<div class="dashboard-container">
+    <div class="page-header">
+        <h2>Dashboard</h2>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card" @onclick='() => Nav.NavigateTo("/patients")' style="cursor: pointer;">
+            <h3>Total de Pacientes</h3>
+            <p class="stat-value">@_totalPatients</p>
+        </div>
+        <div class="stat-card">
+            <h3>Atendimentos Hoje</h3>
+            <p class="stat-value">@_todayVisits</p>
+        </div>
+    </div>
+
+    <div class="recent-section">
+        <h3>Últimos Pacientes</h3>
+        @if (_recentPatients == null || !_recentPatients.Any())
+        {
+            <p>Nenhum registro recente.</p>
+        }
+        else
+        {
+            <div class="patient-list">
+                @foreach (var p in _recentPatients)
+                {
+                    <div class="list-item" @onclick='() => Nav.NavigateTo($"/patients/{p.Id}")' style="cursor: pointer;">
+                        <span>@p.FirstName @p.LastName</span>
+                        <small>@p.Phone</small>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private int _totalPatients;
+    private int _todayVisits = 0; 
+    private List<Patient> _recentPatients = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try 
+        {
+            // Materializa a lista para garantir compatibilidade com LINQ no Blazor WASM
+            var all = (await PatientRepo.GetAllAsync()).ToList();
+            
+            _totalPatients = all.Count;
+            
+            // Ordenação por data de criação real, ignorando deletados (já filtrados no Repo)
+            _recentPatients = all
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(5)
+                .ToList();
+        }
+        catch (Exception)
+        {
+            // Proteção contra falhas de renderização inicial
+        }
+    }
+}

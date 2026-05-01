@@ -1,0 +1,88 @@
+@page "/patients/edit/{Id:int}"
+@using SaluteWeb.Interfaces
+@using SaluteWeb.Models
+@inject IPatientRepository PatientRepo
+@inject NavigationManager Nav
+
+<div class="page-header">
+    <button class="btn-back" @onclick='() => Nav.NavigateTo($"/patients/{Id}")'>← Voltar</button>
+    <h2>Editar Paciente</h2>
+</div>
+
+@if (_loading)
+{
+    <div class="loading">Carregando dados...</div>
+}
+else
+{
+    <div class="form-container">
+        <div class="form-group">
+            <label>Nome</label>
+            <input type="text" @bind="_patient.FirstName" />
+        </div>
+
+        <div class="form-group">
+            <label>Sobrenome</label>
+            <input type="text" @bind="_patient.LastName" />
+        </div>
+
+        <div class="form-group">
+            <label>Telefone</label>
+            <input type="tel" @bind="_patient.Phone" />
+        </div>
+
+        <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" @bind="_patient.Email" />
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-save" @onclick="Update">Salvar Alterações</button>
+            <button class="btn-delete-soft" @onclick="Delete">Excluir Paciente</button>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(_status))
+{
+    <p class="status">@_status</p>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Patient _patient = new();
+    private bool _loading = true;
+    private string _status = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var p = await PatientRepo.GetByIdAsync(Id);
+            if (p == null) { Nav.NavigateTo("/patients"); return; }
+            _patient = p;
+        }
+        catch (Exception) { _status = "Erro ao carregar paciente."; }
+        finally { _loading = false; }
+    }
+
+    private async Task Update()
+    {
+        try
+        {
+            await PatientRepo.UpdateAsync(_patient);
+            _status = "Dados atualizados com sucesso!";
+        }
+        catch (Exception) { _status = "Erro ao atualizar."; }
+    }
+
+    private async Task Delete()
+    {
+        try
+        {
+            await PatientRepo.DeleteAsync(Id);
+            Nav.NavigateTo("/patients");
+        }
+        catch (Exception) { _status = "Erro ao excluir."; }
+    }
+}

@@ -1,0 +1,124 @@
+﻿@page "/patients/{PatientId:int}/anamnesis/add"
+@page "/patients/{PatientId:int}/anamnesis/{Id:int}"
+@inject IAnamnesisRepository AnamnesisRepo
+@inject IPatientRepository PatientRepo
+@inject NavigationManager Nav
+@using SaluteWeb.Interfaces
+@using SaluteWeb.Models
+
+<div class="page-header">
+    <button class="btn-back" @onclick='() => Nav.NavigateTo($"/patients/{PatientId}")'>← Voltar</button>
+    <h2>Anamnese — @_patientName</h2>
+</div>
+
+@if (_loading)
+{
+    <div class="loading">Carregando...</div>
+}
+else
+{
+    <div class="card">
+        <h3>Queixa Principal</h3>
+        <input @bind="_anamnesis.MainComplaint" placeholder="Motivo da consulta" />
+        <input @bind="_anamnesis.Symptoms" placeholder="Sintomas associados" />
+        <input @bind="_anamnesis.SymptomsDuration" placeholder="Há quanto tempo?" />
+    </div>
+
+    <div class="card">
+        <h3>Histórico Médico</h3>
+        <input @bind="_anamnesis.MedicalConditions" placeholder="Doenças pré-existentes" />
+        <input @bind="_anamnesis.Allergies" placeholder="Alergias" />
+        <input @bind="_anamnesis.CurrentMedications" placeholder="Medicamentos em uso" />
+        <input @bind="_anamnesis.PreviousSurgeries" placeholder="Cirurgias anteriores" />
+    </div>
+
+    <div class="card">
+        <h3>Histórico Odontológico</h3>
+        <input @bind="_anamnesis.PreviousTreatments" placeholder="Tratamentos anteriores" />
+        <input @bind="_anamnesis.LastDentalVisit" placeholder="Última visita ao dentista" />
+        <label><input type="checkbox" @bind="_anamnesis.UsesDentalProsthesis" /> Usa prótese</label>
+        <label><input type="checkbox" @bind="_anamnesis.HasBleedingGums" /> Sangramento gengival</label>
+    </div>
+
+    <div class="card">
+        <h3>Hábitos</h3>
+        <input @bind="_anamnesis.Smoking" placeholder="Tabagismo" />
+        <input @bind="_anamnesis.Alcohol" placeholder="Consumo de álcool" />
+        <input @bind="_anamnesis.Diet" placeholder="Alimentação" />
+        <input @bind="_anamnesis.PhysicalActivity" placeholder="Atividade física" />
+    </div>
+
+    <div class="card">
+        <h3>Sinais Vitais</h3>
+        <div class="row">
+            <input @bind="_anamnesis.BloodPressureSystolic" placeholder="Sistólica" type="number" />
+            <span>/</span>
+            <input @bind="_anamnesis.BloodPressureDiastolic" placeholder="Diastólica" type="number" />
+        </div>
+        <input @bind="_anamnesis.HeartRate" placeholder="Freq. cardíaca (bpm)" type="number" />
+        <input @bind="_anamnesis.Temperature" placeholder="Temperatura (°C)" type="number" />
+    </div>
+
+    <div class="card">
+        <h3>Observações</h3>
+        <textarea @bind="_anamnesis.Observations" placeholder="Observações adicionais..." rows="4"></textarea>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_status))
+    {
+        <p class="status">@_status</p>
+    }
+
+    <button class="btn-primary" @onclick="SaveAsync" disabled="@_saving">
+        @(_saving ? "Salvando..." : "Salvar Anamnese")
+    </button>
+}
+
+@code {
+    [Parameter] public int PatientId { get; set; }
+    [Parameter] public int Id { get; set; }
+
+    private Anamnesis _anamnesis = new();
+    private string _patientName = string.Empty;
+    private bool _loading;
+    private bool _saving;
+    private string _status = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            var patient = await PatientRepo.GetByIdAsync(PatientId);
+            _patientName = patient is not null ? $"{patient.FirstName} {patient.LastName}" : "Paciente não encontrado";
+
+            if (Id > 0)
+                _anamnesis = await AnamnesisRepo.GetByIdAsync(Id) ?? new();
+            else
+                _anamnesis = new() { PatientId = PatientId, CreatedAt = DateTime.Now };
+        }
+        catch (Exception ex) { _status = $"Erro ao carregar: {ex.Message}"; }
+        finally { _loading = false; }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_anamnesis.MainComplaint))
+        {
+            _status = "Queixa principal é obrigatória.";
+            return;
+        }
+        try
+        {
+            _saving = true;
+            _anamnesis.PatientId = PatientId;
+            
+            if (Id == 0) await AnamnesisRepo.AddAsync(_anamnesis);
+            else await AnamnesisRepo.UpdateAsync(_anamnesis);
+            
+            Nav.NavigateTo($"/patients/{PatientId}");
+        }
+        catch (Exception ex) { _status = $"Erro ao salvar: {ex.Message}"; }
+        finally { _saving = false; }
+    }
+}

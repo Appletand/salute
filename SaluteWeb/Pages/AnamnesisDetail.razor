@@ -1,0 +1,80 @@
+@page "/patients/{PatientId:int}/anamnesis"
+@using SaluteWeb.Interfaces
+@using SaluteWeb.Models
+@inject IAnamnesisRepository AnamnesisRepo
+@inject IPatientRepository PatientRepo
+@inject NavigationManager Nav
+
+<div class="page-header">
+    <button class="btn-back" @onclick='() => Nav.NavigateTo($"/patients/{PatientId}")'>← Voltar</button>
+    <h2>Anamnese: @_patientName</h2>
+</div>
+
+@if (_loading)
+{
+    <div class="loading">Carregando...</div>
+}
+else
+{
+    <div class="form-container">
+        <div class="form-group">
+            <label>Queixa Principal</label>
+            <textarea @bind="_anamnesis.MainComplaint" placeholder="Descreva o motivo da consulta..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Histórico de Doenças</label>
+            <textarea @bind="_anamnesis.History" placeholder="Doenças prévias, cirurgias, etc..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Medicamentos em Uso</label>
+            <textarea @bind="_anamnesis.Medications" placeholder="Liste remédios e dosagens..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Alergias</label>
+            <input type="text" @bind="_anamnesis.Allergies" placeholder="Ex: Penicilina, Glúten..." />
+        </div>
+
+        <button class="btn-save" @onclick="Save">Salvar Anamnese</button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(_status))
+{
+    <p class="status">@_status</p>
+}
+
+@code {
+    [Parameter] public int PatientId { get; set; }
+    
+    private Anamnesis _anamnesis = new();
+    private string _patientName = "...";
+    private bool _loading = true;
+    private string _status = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try 
+        {
+            var p = await PatientRepo.GetByIdAsync(PatientId);
+            if (p == null) { Nav.NavigateTo("/patients"); return; }
+            
+            _patientName = $"{p.FirstName} {p.LastName}";
+            _anamnesis = await AnamnesisRepo.GetByPatientIdAsync(PatientId) ?? new Anamnesis { PatientId = PatientId };
+        }
+        catch (Exception ex) { _status = "Erro ao carregar dados."; }
+        finally { _loading = false; }
+    }
+
+    private async Task Save()
+    {
+        try 
+        {
+            await AnamnesisRepo.SaveOrUpdateAsync(_anamnesis);
+            _status = "Salvo com sucesso!";
+        }
+        catch (Exception) { _status = "Erro ao salvar."; }
+    }
+}

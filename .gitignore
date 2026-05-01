@@ -1,4 +1,19 @@
-﻿ .vs/
- bin/
- obj/
- *.user 
+﻿# Build and artifacts
+[Bb]in/
+[Oo]bj/
+.razor.g.cs
+.razor.js
+
+# Environment and secrets
+*.user
+*.userosscache
+*.sln.doccache
+appsettings*.json
+!appsettings.json
+.env
+*.env
+
+# Tooling
+.vscode/
+.idea/
+.vs/

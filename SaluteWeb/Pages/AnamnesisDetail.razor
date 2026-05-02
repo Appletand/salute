@@ -73,7 +73,7 @@ else
         try 
         {
             await AnamnesisRepo.SaveOrUpdateAsync(_anamnesis);
-            _status = "Salvo com sucesso!";
+            _status = "Salvo com sucesso!"; 
         }
         catch (Exception) { _status = "Erro ao salvar."; }
     }

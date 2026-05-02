@@ -12,7 +12,7 @@ appsettings*.json
 !appsettings.json
 .env
 *.env
-
+.env.example
 # Tooling
 .vscode/
 .idea/

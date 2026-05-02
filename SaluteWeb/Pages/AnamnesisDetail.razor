@@ -64,7 +64,7 @@ else
             _patientName = $"{p.FirstName} {p.LastName}";
             _anamnesis = await AnamnesisRepo.GetByPatientIdAsync(PatientId) ?? new Anamnesis { PatientId = PatientId };
         }
-        catch (Exception ex) { _status = "Erro ao carregar dados."; }
+        catch{ _status = "Erro ao carregar dados."; }
         finally { _loading = false; }
     }
 

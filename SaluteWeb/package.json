@@ -1,0 +1,8 @@
+{
+  "name": "salute-web",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "dotnet publish -c Release -o output",
+    "install": "echo 'skip install'"
+  }
+}

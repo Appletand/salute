@@ -1,0 +1,11 @@
+﻿{
+  "version": 2,
+  "buildCommand": "dotnet publish SaluteWeb/SaluteWeb.csproj -c Release -o publish",
+  "outputDirectory": "publish/wwwroot",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
